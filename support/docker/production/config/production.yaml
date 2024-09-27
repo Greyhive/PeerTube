@@ -6,7 +6,7 @@ listen:
 webserver:
   https: true
   hostname: undefined
-  port: 443
+  port: 80
 
 rates_limit:
   login:
