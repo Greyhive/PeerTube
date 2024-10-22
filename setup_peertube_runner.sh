@@ -2,7 +2,7 @@
 
 # Update system packages
 sudo apt update
-sudo apt upgrade -y
+sudo apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
 # Set up Node.js 18.x from NodeSource and install it
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -73,6 +73,24 @@ sudo systemctl daemon-reload
 sudo systemctl enable prunner.service
 sudo systemctl restart prunner.service
 sudo -u prunner peertube-runner register --url https://greyhive.americancloud.dev --registration-token ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092 --runner-name $runner_name
+
+sudo -u prunner tee /srv/prunner/.config/peertube-runner-nodejs/default/config.toml > /dev/null <<EOL
+[jobs]
+concurrency = 4
+
+[ffmpeg]
+threads = 2
+nice = 20
+
+[transcription]
+engine = "whisper-ctranslate2"
+model = "small"
+
+[[registeredInstances]]
+url = "https://greyhive.americancloud.dev"
+runnerToken = "ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092"
+runnerName = "$runner_name"
+EOL
 
 # Check installed versions of node and npm
 #node -v
