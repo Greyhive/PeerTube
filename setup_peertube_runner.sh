@@ -33,28 +33,6 @@ runner_name=${full_hostname#peertube-}  # Remove 'peertube-' prefix
 sudo mkdir -p /srv/prunner/.config/peertube-runner-nodejs/default
 sudo chown -R prunner:prunner /srv/prunner/.config
 
-# Place the correct config.toml file in the appropriate location
-sudo tee /srv/prunner/.config/peertube-runner-nodejs/default/config.toml > /dev/null <<EOL
-[jobs]
-concurrency = 4
-
-[ffmpeg]
-threads = 2
-nice = 20
-
-[transcription]
-engine = "whisper-ctranslate2"
-model = "small"
-
-[[registeredInstances]]
-url = "https://greyhive.americancloud.dev"
-runnerToken = "ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092"
-runnerName = "$runner_name"
-EOL
-
-# Set correct ownership for the configuration files
-sudo chown -R prunner:prunner /srv/prunner/.config
-
 # Install PeerTube runner globally via npm
 sudo npm install -g @peertube/peertube-runner
 
@@ -85,20 +63,20 @@ CapabilityBoundingSet=~CAP_SYS_ADMIN
 WantedBy=multi-user.target
 EOL
 
-# Reload systemd, enable and start the prunner service
-sudo systemctl daemon-reload
-sudo systemctl enable prunner.service
-
-sudo -u prunner peertube-runner register --url https://greyhive.americancloud.dev --registration-token ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092 --runner-name $runner_name
-
-# Check installed versions of node and npm
-node -v
-npm -v
-
 # Append the provided SSH key to authorized_keys
 sudo tee -a /home/cloud/.ssh/authorized_keys > /dev/null <<EOL
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDWh26GAn1N437O27i7G1WR+SBmNfqpYRPMaBWg9Jy+vV1xa5aSdRtV4J1EJZUgxAkJJ9aeT6xzYY6k+L6bbLmzjyeCmbC3ohtdamiX57v8SFZ18qLpX/GJVvU2JkXg483SXq8VZUJ1IlqwQ/xB+9px07rN3M9tD47ouYe1OxLhsebtFEZ+OjMgNdEcXpyHqIeYpvC4NK9c8IzjIRam2QfSysTOKVnV14BfItGGSVNUy7reB+QF/N7SzHKP8G+KrtXKumGPSXZdzQByOin4mcwF5Aa4czAskdlFwDfDx9wFR44m8dQKyNnGMfpMpb/34/V7m9yB3qC5G7ktyzL08Z7tMjVJFYnONei0CwP2R1UortOr9ZDmGIS7fpZZCvHwLZ3R1YXI8F8H/g5eZyxKCOhjAxZ3bdl8wmVLNQ0K2paWW1iWVF+b1rjP3xzmlJVWLbymLI2iJFKvOVpV1XTMZC2KIw36tZS0lPH33RyrWRICqF2cZuutYuAnCibdbfekwac= cloud@peertube-greyhive
 EOL
+
+# Reload systemd, enable and start the prunner service
+sudo systemctl daemon-reload
+sudo systemctl enable prunner.service
+sudo systemctl restart prunner.service
+sudo -u prunner peertube-runner register --url https://greyhive.americancloud.dev --registration-token ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092 --runner-name $runner_name
+
+# Check installed versions of node and npm
+#node -v
+#npm -v
 
 # Set the correct permissions for the authorized_keys file
 #sudo chmod 600 /home/cloud/.ssh/authorized_keys
