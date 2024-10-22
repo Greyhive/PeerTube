@@ -88,10 +88,8 @@ EOL
 # Reload systemd, enable and start the prunner service
 sudo systemctl daemon-reload
 sudo systemctl enable prunner.service
-sudo systemctl start prunner.service
 
-# Verify the service is running
-sudo systemctl status prunner.service
+sudo -u prunner peertube-runner register --url https://greyhive.americancloud.dev --registration-token ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092 --runner-name $runner_name
 
 # Check installed versions of node and npm
 node -v
