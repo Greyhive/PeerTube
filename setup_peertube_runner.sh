@@ -73,24 +73,8 @@ sudo systemctl daemon-reload
 sudo systemctl enable prunner.service
 sudo systemctl restart prunner.service
 sudo -u prunner peertube-runner register --url https://greyhive.americancloud.dev --registration-token ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092 --runner-name $runner_name
-
-sudo -u prunner tee /srv/prunner/.config/peertube-runner-nodejs/default/config.toml > /dev/null <<EOL
-[jobs]
-concurrency = 4
-
-[ffmpeg]
-threads = 2
-nice = 20
-
-[transcription]
-engine = "whisper-ctranslate2"
-model = "small"
-
-[[registeredInstances]]
-url = "https://greyhive.americancloud.dev"
-runnerToken = "ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092"
-runnerName = "$runner_name"
-EOL
+sleep 2
+sudo -u prunner sed -i 's/concurrency = [0-9]\+/concurrency = 4/' /srv/prunner/.config/peertube-runner-nodejs/default/config.toml
 
 # Check installed versions of node and npm
 #node -v
