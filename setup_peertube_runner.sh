@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <registration-token>"
+    exit 1
+fi
+
+# Assign the passed registration token to a variable
+REGISTRATION_TOKEN=$1
+
 # Update system packages
 sudo apt update
 sudo apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
@@ -72,7 +81,7 @@ EOL
 sudo systemctl daemon-reload
 sudo systemctl enable prunner.service
 sudo systemctl restart prunner.service
-sudo -u prunner peertube-runner register --url https://greyhive.americancloud.dev --registration-token ptrrt-c3463302-e899-46b4-ae0e-bf401f10d092 --runner-name $runner_name
+sudo -u prunner peertube-runner register --url https://greyhive.americancloud.dev --registration-token "$REGISTRATION_TOKEN" --runner-name $runner_name
 sleep 2
 sudo -u prunner sed -i 's/concurrency = [0-9]\+/concurrency = 4/' /srv/prunner/.config/peertube-runner-nodejs/default/config.toml
 
